@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Nutrition Plan - Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+  <nav class="navbar">
+    <div class="logo">🥗 Nutrition Plan</div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Daily Dashboard</a></li>
+      <li><a href="records.html">Food Intake Log</a></li>
+      <li><a href="calculator.html">Diet Calculator</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <!-- User Notification Alert -->
+    <div id="alertBox" class="alert"></div>
+
+    <!-- 1. Central Food Search Bar (USDA API) -->
+    <div class="search-center-wrapper">
+      <h2>🔍 Search Food Nutrition Facts</h2>
+      <p style="color: #64748b; font-size: 14px; margin-top: 4px;">
+        Search and select any food item to view complete 100g calories & macronutrients.
+      </p>
+      <div class="search-bar-container">
+        <input type="text" id="foodInput" placeholder="Type food name (e.g., banana, chicken breast, oats)...">
+        <button id="btnSearch">Search</button>
+      </div>
+      <div id="searchResultsList" class="search-results-list"></div>
+    </div>
+
+    <!-- 2. Today's Nutritional Summary -->
+    <div class="dashboard-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px;">
+        <h2 style="font-size: 20px; color: #1e293b; margin: 0;">📊 Today's Nutritional Summary</h2>
+        <span id="dashboardDateBadge" style="background: #e2e8f0; color: #475569; font-weight: 700; font-size: 12px; padding: 4px 12px; border-radius: 20px;">Today</span>
+      </div>
+      
+      <!-- Total Calorie Intake Today Banner -->
+      <div class="calorie-summary-box">
+        <h3>Total Calorie Intake Today</h3>
+        <div class="calorie-number" id="dailyCaloriesDisplay">0 kcal</div>
+        <p>Total accumulated from your 4 daily meals logged today</p>
+      </div>
+
+      <!-- Macro Summary Grid -->
+      <div class="macro-grid">
+        <div class="macro-box">
+          <h4>🍗 Protein</h4>
+          <div class="macro-value" id="dailyProteinDisplay">0 g</div>
+        </div>
+        <div class="macro-box">
+          <h4>🍚 Carbohydrates</h4>
+          <div class="macro-value" id="dailyCarbsDisplay">0 g</div>
+        </div>
+        <div class="macro-box">
+          <h4>🥑 Total Fat</h4>
+          <div class="macro-value" id="dailyFatDisplay">0 g</div>
+        </div>
+      </div>
+
+      <!-- Feature 3: Smart Analysis & Tomorrow's Suggestion Button -->
+      <div style="margin-top: 24px; text-align: center;">
+        <button id="btnAnalyzeNutrition" class="btn-analyze-diet">
+          ✨ Analyze Today's Nutrition & Get Tomorrow's Suggestion
+        </button>
+      </div>
+
+      <!-- Container for Nutrition Analysis & Suggestion -->
+      <div id="analysisResultContainer" style="display: none; margin-top: 20px;"></div>
+
+      <!-- 4 Meal Timings Breakdown -->
+      <h3 style="margin-top: 30px; margin-bottom: 14px; color: #1e293b; font-size: 17px; font-weight: 700;">
+        🕒 Nutritional Breakdown by Meal Timing
+      </h3>
+
+      <div class="meal-breakdown-grid">
+        <!-- 1. Breakfast -->
+        <div class="meal-card" style="border-top-color: #f39c12;">
+          <div class="meal-card-header">
+            <h3>🌅 Breakfast (Morning)</h3>
+            <span class="meal-total-cals" id="breakfastCalories">0 kcal</span>
+          </div>
+          <div class="meal-macro-row">
+            <span>P: <strong id="breakfastProtein">0g</strong></span>
+            <span>C: <strong id="breakfastCarbs">0g</strong></span>
+            <span>F: <strong id="breakfastFat">0g</strong></span>
+          </div>
+          <ul class="meal-items-list" id="breakfastItems">
+            <li style="color:#aaa;">No meals logged yet</li>
+          </ul>
+        </div>
+
+        <!-- 2. Lunch -->
+        <div class="meal-card" style="border-top-color: #e67e22;">
+          <div class="meal-card-header">
+            <h3>☀️ Lunch (Afternoon)</h3>
+            <span class="meal-total-cals" id="lunchCalories">0 kcal</span>
+          </div>
+          <div class="meal-macro-row">
+            <span>P: <strong id="lunchProtein">0g</strong></span>
+            <span>C: <strong id="lunchCarbs">0g</strong></span>
+            <span>F: <strong id="lunchFat">0g</strong></span>
+          </div>
+          <ul class="meal-items-list" id="lunchItems">
+            <li style="color:#aaa;">No meals logged yet</li>
+          </ul>
+        </div>
+
+        <!-- 3. Afternoon Tea / Snack -->
+        <div class="meal-card" style="border-top-color: #3498db;">
+          <div class="meal-card-header">
+            <h3>☕ Afternoon Tea / Snack</h3>
+            <span class="meal-total-cals" id="snackCalories">0 kcal</span>
+          </div>
+          <div class="meal-macro-row">
+            <span>P: <strong id="snackProtein">0g</strong></span>
+            <span>C: <strong id="snackCarbs">0g</strong></span>
+            <span>F: <strong id="snackFat">0g</strong></span>
+          </div>
+          <ul class="meal-items-list" id="snackItems">
+            <li style="color:#aaa;">No meals logged yet</li>
+          </ul>
+        </div>
+
+        <!-- 4. Dinner -->
+        <div class="meal-card" style="border-top-color: #9b59b6;">
+          <div class="meal-card-header">
+            <h3>🌙 Dinner (Night)</h3>
+            <span class="meal-total-cals" id="dinnerCalories">0 kcal</span>
+          </div>
+          <div class="meal-macro-row">
+            <span>P: <strong id="dinnerProtein">0g</strong></span>
+            <span>C: <strong id="dinnerCarbs">0g</strong></span>
+            <span>F: <strong id="dinnerFat">0g</strong></span>
+          </div>
+          <ul class="meal-items-list" id="dinnerItems">
+            <li style="color:#aaa;">No meals logged yet</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

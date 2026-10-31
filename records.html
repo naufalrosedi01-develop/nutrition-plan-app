@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Nutrition Plan - Food Intake Diary</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+  <nav class="navbar">
+    <div class="logo">🥗 Nutrition Plan</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Daily Dashboard</a></li>
+      <li><a href="records.html" class="active">Food Intake Log</a></li>
+      <li><a href="calculator.html">Diet Calculator</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <!-- User Notification Alert Box -->
+    <div id="crudAlertBox" class="alert"></div>
+
+    <!-- Diary Header with Date Picker & Calendar Button (Blue "+ Log Food" Button Removed) -->
+    <div class="diary-header">
+      <div class="diary-header-left">
+        <h2>Diary</h2>
+        
+        <!-- Date Selector Button with Calendar Icon -->
+        <div class="date-picker-wrapper">
+          <button type="button" id="btnCalendarTrigger" class="btn-calendar-trigger" title="Select Date">
+            📅 <span id="displayDateLabel">Today</span>
+          </button>
+          <input type="date" id="diaryDatePicker">
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 Modern Meal Section Cards -->
+    <div class="diary-list">
+      <!-- 1. Breakfast Card -->
+      <div class="diary-card" id="card-Breakfast">
+        <div class="diary-card-main">
+          <div class="diary-card-icon">☕</div>
+          <div class="diary-card-info">
+            <div class="diary-card-title">Breakfast</div>
+            <div class="diary-card-subtitle" id="breakfastSubtitle">No meals logged yet</div>
+            <div class="diary-card-macros" id="breakfastMacroStats">0 cal &nbsp;•&nbsp; C 0% &nbsp; F 0% &nbsp; P 0%</div>
+          </div>
+          <button class="btn-card-log" onclick="openLogModalForCategory('Breakfast')">Log</button>
+        </div>
+        <!-- Expandable logged items list for Breakfast -->
+        <div class="diary-items-container" id="breakfastItemsContainer"></div>
+      </div>
+
+      <!-- 2. Lunch Card -->
+      <div class="diary-card" id="card-Lunch">
+        <div class="diary-card-main">
+          <div class="diary-card-icon">🍔</div>
+          <div class="diary-card-info">
+            <div class="diary-card-title">Lunch</div>
+            <div class="diary-card-subtitle" id="lunchSubtitle">No meals logged yet</div>
+            <div class="diary-card-macros" id="lunchMacroStats">0 cal &nbsp;•&nbsp; C 0% &nbsp; F 0% &nbsp; P 0%</div>
+          </div>
+          <button class="btn-card-log" onclick="openLogModalForCategory('Lunch')">Log</button>
+        </div>
+        <div class="diary-items-container" id="lunchItemsContainer"></div>
+      </div>
+
+      <!-- 3. Afternoon Tea / Snack Card -->
+      <div class="diary-card" id="card-Snack">
+        <div class="diary-card-main">
+          <div class="diary-card-icon">🥪</div>
+          <div class="diary-card-info">
+            <div class="diary-card-title">Afternoon Tea / Snack</div>
+            <div class="diary-card-subtitle" id="snackSubtitle">No meals logged yet</div>
+            <div class="diary-card-macros" id="snackMacroStats">0 cal &nbsp;•&nbsp; C 0% &nbsp; F 0% &nbsp; P 0%</div>
+          </div>
+          <button class="btn-card-log" onclick="openLogModalForCategory('Snack')">Log</button>
+        </div>
+        <div class="diary-items-container" id="snackItemsContainer"></div>
+      </div>
+
+      <!-- 4. Dinner Card -->
+      <div class="diary-card" id="card-Dinner">
+        <div class="diary-card-main">
+          <div class="diary-card-icon">🍲</div>
+          <div class="diary-card-info">
+            <div class="diary-card-title">Dinner</div>
+            <div class="diary-card-subtitle" id="dinnerSubtitle">No meals logged yet</div>
+            <div class="diary-card-macros" id="dinnerMacroStats">0 cal &nbsp;•&nbsp; C 0% &nbsp; F 0% &nbsp; P 0%</div>
+          </div>
+          <button class="btn-card-log" onclick="openLogModalForCategory('Dinner')">Log</button>
+        </div>
+        <div class="diary-items-container" id="dinnerItemsContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP MODAL: Add / Edit Meal Form (Standardized 100g) -->
+  <div id="mealModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="formHeading">Log Food Intake</h3>
+        <span class="modal-close" id="btnCloseModal">&times;</span>
+      </div>
+
+      <input type="hidden" id="editRecordId">
+
+      <!-- Target Log Date -->
+      <div class="form-group" style="margin-top: 15px;">
+        <label for="modalRecordDate">Intake Date:</label>
+        <input type="date" id="modalRecordDate">
+      </div>
+
+      <!-- USDA API Search Box -->
+      <div class="form-group">
+        <label for="foodSearchInput">Search Food Database (USDA API - 100g Serving):</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="foodSearchInput" placeholder="e.g., oatmeal, chicken breast, milk, rice...">
+          <button type="button" id="btnSearchApiFood" style="width: auto; padding: 10px 18px;">Search</button>
+        </div>
+        <!-- Search Results Dropdown -->
+        <div id="apiSearchResults" class="search-results-list" style="max-width: 100%;"></div>
+      </div>
+
+      <!-- Auto-filled Food Name -->
+      <div class="form-group">
+        <label for="mealName">Food Description (Per 100g):</label>
+        <input type="text" id="mealName" placeholder="Auto-filled from USDA search...">
+      </div>
+
+      <!-- Nutrients Row 1: Calories & Protein -->
+      <div style="display: flex; gap: 10px;">
+        <div class="form-group" style="flex: 1;">
+          <label for="mealCalories">Calories (kcal):</label>
+          <input type="number" id="mealCalories" placeholder="0">
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label for="mealProtein">Protein (g):</label>
+          <input type="number" id="mealProtein" placeholder="0">
+        </div>
+      </div>
+
+      <!-- Nutrients Row 2: Carbs & Fat -->
+      <div style="display: flex; gap: 10px;">
+        <div class="form-group" style="flex: 1;">
+          <label for="mealCarbs">Carbohydrates (g):</label>
+          <input type="number" id="mealCarbs" placeholder="0">
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label for="mealFat">Fat (g):</label>
+          <input type="number" id="mealFat" placeholder="0">
+        </div>
+      </div>
+
+      <!-- Meal Category Selector -->
+      <div class="form-group">
+        <label for="mealCategory">Meal Timing:</label>
+        <select id="mealCategory">
+          <option value="Breakfast">Breakfast</option>
+          <option value="Lunch">Lunch</option>
+          <option value="Snack">Afternoon Tea / Snack</option>
+          <option value="Dinner">Dinner</option>
+        </select>
+      </div>
+
+      <!-- Modal Action Buttons -->
+      <div style="display: flex; gap: 10px; margin-top: 15px;">
+        <button id="btnSaveRecord" style="flex: 2;">Save to Diary</button>
+        <button type="button" id="btnCancelEdit" class="btn-secondary" style="flex: 1;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/records.js"></script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Nutrition Plan - Food Details</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Navigation Header -->
+  <nav class="navbar">
+    <div class="logo">🥗 Nutrition Plan</div>
+    <ul class="nav-links">
+      <li><a href="index.html">← Back to Dashboard</a></li>
+      <li><a href="records.html">Food Intake Log</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <h2 id="foodTitle">Food Nutrition Details</h2>
+      <p style="color: #7f8c8d; font-size: 14px; margin-top: 4px;">Standardized serving size: <strong>100 grams</strong></p>
+      
+      <!-- Food nutrient info container -->
+      <div id="detailsContent" style="margin-top: 15px;"></div>
+      
+      <!-- Action Buttons -->
+      <div style="margin-top: 20px; display: flex; gap: 10px;">
+        <button id="btnQuickAdd" style="background-color: #2ecc71;">Add 100g to Today's Intake Log</button>
+        <button onclick="window.location.href='index.html'" class="btn-secondary" style="width: auto; padding: 10px 20px;">Back</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const foodTitle = document.getElementById('foodTitle');
+    const detailsContent = document.getElementById('detailsContent');
+    const btnQuickAdd = document.getElementById('btnQuickAdd');
+
+    // Retrieve selected food data from sessionStorage
+    const rawData = sessionStorage.getItem('SELECTED_FOOD_ITEM');
+
+    if (!rawData) {
+      detailsContent.innerHTML = '<p style="color: red;">No food item selected. Please go back and search again.</p>';
+    } else {
+      const product = JSON.parse(rawData);
+      const nutriments = product.nutriments || {};
+
+      const name = product.product_name || 'Selected Food Item';
+      const calories = nutriments['energy-kcal_100g'] !== undefined ? parseFloat(nutriments['energy-kcal_100g']) : 0;
+      const protein = nutriments.proteins_100g !== undefined ? parseFloat(nutriments.proteins_100g) : 0;
+      const carbs = nutriments.carbohydrates_100g !== undefined ? parseFloat(nutriments.carbohydrates_100g) : 0;
+      const fat = nutriments.fat_100g !== undefined ? parseFloat(nutriments.fat_100g) : 0;
+
+      foodTitle.textContent = name;
+
+      // Render nutrient cards
+      detailsContent.innerHTML = `
+        <div class="calorie-summary-box" style="margin-bottom: 20px;">
+          <h3>Energy Value (Per 100g Serving)</h3>
+          <div class="calorie-number">${calories} kcal</div>
+        </div>
+
+        <div class="macro-grid">
+          <div class="macro-box">
+            <h4>🍗 Protein (Per 100g)</h4>
+            <div class="macro-value">${protein} g</div>
+          </div>
+          <div class="macro-box">
+            <h4>🍚 Carbs (Per 100g)</h4>
+            <div class="macro-value">${carbs} g</div>
+          </div>
+          <div class="macro-box">
+            <h4>🥑 Total Fat (Per 100g)</h4>
+            <div class="macro-value">${fat} g</div>
+          </div>
+        </div>
+      `;
+
+      // Quick-add to Local Storage
+      btnQuickAdd.addEventListener('click', () => {
+        const records = JSON.parse(localStorage.getItem('NUTRITION_MEAL_RECORDS')) || [];
+        records.push({
+          id: Date.now().toString(),
+          name: name.includes('100g') ? name : `${name} (100g)`,
+          calories: calories,
+          protein: protein,
+          carbs: carbs,
+          fat: fat,
+          category: 'Snack'
+        });
+        localStorage.setItem('NUTRITION_MEAL_RECORDS', JSON.stringify(records));
+        alert('Added 100g portion to your daily intake log!');
+        window.location.href = 'index.html';
+      });
+    }
+  </script>
+</body>
+</html>
